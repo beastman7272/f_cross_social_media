@@ -37,6 +37,9 @@ ENV/
 .env
 .env.local
 
+# Credentials
+sa.json
+
 # OS
 .DS_Store
 Thumbs.db
