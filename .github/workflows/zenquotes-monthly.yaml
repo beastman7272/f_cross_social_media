@@ -5,6 +5,9 @@ on:
     - cron: "0 13 1 * *"   # 13:00 UTC = 08:00 CT (CST/CDT handled by UTC)
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
