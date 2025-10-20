@@ -1,0 +1,33 @@
+# .github/workflows/pinterest_scraper.yml
+name: Pinterest Scraper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-pinterest-scraper:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Pinterest scraper
+        env:
+          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          GSPREAD_SHEET_ID: ${{ secrets.GSPREAD_SHEET_ID }}
+        run: |
+          python pinterest_scraper.py
