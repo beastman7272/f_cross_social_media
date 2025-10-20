@@ -9,6 +9,9 @@ import datetime
 import feedparser
 import gspread
 from google.oauth2.service_account import Credentials
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # === CONFIGURATION ===
 BOARD_FEEDS = {
@@ -41,7 +44,13 @@ def fetch_pinterest_boards():
     today = datetime.date.today().isoformat()
 
     for board_name, feed_url in BOARD_FEEDS.items():
+        print(f"📌 Processing board: {board_name}")
+        print(f"🔗 Feed URL: {feed_url}")
+        
         feed = feedparser.parse(feed_url)
+        print(f"📊 Feed status: {feed.status if hasattr(feed, 'status') else 'Unknown'}")
+        print(f"📝 Found {len(feed.entries)} entries")
+        
         for entry in feed.entries:
             title = entry.get("title", "").strip()
             link = entry.get("link", "")
@@ -52,6 +61,7 @@ def fetch_pinterest_boards():
             elif "media_content" in entry:
                 img_url = entry.media_content[0].get("url", "")
             new_rows.append(["Pinterest", board_name, title, img_url, link, published, ""])
+            print(f"  ✓ Added: {title[:50]}...")
     
     # Append all new rows
     if new_rows:
