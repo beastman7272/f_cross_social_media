@@ -30,4 +30,4 @@ jobs:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
           GSPREAD_SHEET_ID: ${{ secrets.GSPREAD_SHEET_ID }}
         run: |
-          python pinterest_scraper.py
+          python scripts/pinterest_scraper.py
