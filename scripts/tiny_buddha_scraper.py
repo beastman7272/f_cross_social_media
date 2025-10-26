@@ -1,4 +1,5 @@
 import os
+import json
 import feedparser
 import re
 import html
@@ -19,8 +20,11 @@ service_account_info = os.getenv("GOOGLE_SA_JSON")
 if not service_account_info:
     raise ValueError("GOOGLE_SA_JSON not found. Ensure environment variable is set.")
 
+# Parse the JSON string into a dictionary
+service_account_dict = json.loads(service_account_info)
+
 creds = Credentials.from_service_account_info(
-    eval(service_account_info),
+    service_account_dict,
     scopes=SCOPES
 )
 client = gspread.authorize(creds)
