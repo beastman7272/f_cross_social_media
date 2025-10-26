@@ -4,17 +4,28 @@ import re
 import html
 import gspread
 from google.oauth2.service_account import Credentials
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ==== CONFIG ====
-FEED_URL = "https://tiny_buddha.com/feed/"
+FEED_URL = "https://tinybuddha.com/feed/"
 SPREADSHEET_ID = os.getenv("GSPREAD_SHEET_ID", "").strip()
-SHEET_NAME = os.getenv("SHEET_NAME", "Tiny_Buddha").strip()
+SHEET_NAME = "Tiny_Buddha"
 
 # Google Sheets auth
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file("sa.json", scopes=SCOPES)
+service_account_info = os.getenv("GOOGLE_SA_JSON")
+if not service_account_info:
+    raise ValueError("GOOGLE_SA_JSON not found. Ensure environment variable is set.")
+
+creds = Credentials.from_service_account_info(
+    eval(service_account_info),
+    scopes=SCOPES
+)
 client = gspread.authorize(creds)
-sheet = client.open_by_key(SPREADSHEET_ID).worksheet(SHEET_NAME)
+spreadsheet = client.open_by_key(SPREADSHEET_ID)
+sheet = spreadsheet.worksheet(SHEET_NAME)
 
 # Fetch existing URLs to avoid duplicates
 existing_urls = set(row[4] for row in sheet.get_all_values()[1:] if len(row) > 4)
