@@ -6,7 +6,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # ==== CONFIG ====
-FEED_URL = "https://tinybuddha.com/feed/"
+FEED_URL = "https://tiny_buddha.com/feed/"
 SPREADSHEET_ID = os.getenv("GSPREAD_SHEET_ID", "").strip()
 SHEET_NAME = os.getenv("SHEET_NAME", "Tiny_Buddha").strip()
 
