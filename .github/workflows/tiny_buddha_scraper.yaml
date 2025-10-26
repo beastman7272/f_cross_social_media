@@ -29,4 +29,4 @@ jobs:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
         run: |
           echo "$GOOGLE_SA_JSON" > sa.json
-          python scripts/tinybuddha_scraper.py
+          python scripts/tiny_buddha_scraper.py
