@@ -3,8 +3,6 @@ import json
 import feedparser
 import re
 import html
-import gspread
-from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,28 +12,21 @@ FEED_URL = "https://tinybuddha.com/feed/"
 SPREADSHEET_ID = os.getenv("GSPREAD_SHEET_ID", "").strip()
 SHEET_NAME = "Tiny_Buddha"
 
-# Google Sheets auth
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-service_account_info = os.getenv("GOOGLE_SA_JSON")
-if not service_account_info:
-    raise ValueError("GOOGLE_SA_JSON not found. Ensure environment variable is set.")
-
-# Parse the JSON string into a dictionary
-service_account_dict = json.loads(service_account_info)
-
-creds = Credentials.from_service_account_info(
-    service_account_dict,
-    scopes=SCOPES
-)
-client = gspread.authorize(creds)
-spreadsheet = client.open_by_key(SPREADSHEET_ID)
-sheet = spreadsheet.worksheet(SHEET_NAME)
-
-# Fetch existing URLs to avoid duplicates
-existing_urls = set(row[4] for row in sheet.get_all_values()[1:] if len(row) > 4)
-
-# Parse feed
-feed = feedparser.parse(FEED_URL)
+def get_sheet():
+    """Get Google Sheet connection."""
+    import gspread
+    from google.oauth2.service_account import Credentials
+    
+    SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+    service_account_info = os.getenv("GOOGLE_SA_JSON")
+    if not service_account_info:
+        raise ValueError("GOOGLE_SA_JSON not found. Ensure environment variable is set.")
+    
+    service_account_dict = json.loads(service_account_info)
+    creds = Credentials.from_service_account_info(service_account_dict, scopes=SCOPES)
+    client = gspread.authorize(creds)
+    spreadsheet = client.open_by_key(SPREADSHEET_ID)
+    return spreadsheet.worksheet(SHEET_NAME)
 
 def extract_first_strong(html_block):
     """Extract first <strong>...</strong> text."""
@@ -45,6 +36,14 @@ def extract_first_strong(html_block):
     text = re.sub("<.*?>", "", match.group(1))
     return html.unescape(text.strip())
 
+# Parse feed
+feed = feedparser.parse(FEED_URL)
+
+# Get existing URLs to avoid duplicates
+sheet = get_sheet()
+existing_urls = set(row[4] for row in sheet.get_all_values()[1:] if len(row) > 4)
+
+# Process feed entries
 new_rows = []
 for entry in feed.entries:
     url = entry.link
