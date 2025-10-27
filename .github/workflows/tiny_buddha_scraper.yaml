@@ -27,6 +27,6 @@ jobs:
       - name: Run Tiny Buddha scraper
         env:
           GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
+          GSPREAD_SHEET_ID: ${{ secrets.GSPREAD_SHEET_ID }}
         run: |
-          echo "$GOOGLE_SA_JSON" > sa.json
           python scripts/tiny_buddha_scraper.py
